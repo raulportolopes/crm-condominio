@@ -1,0 +1,8 @@
+Coloque aqui as plantas 3D de cada tipo de apartamento (arquivo .glb ou .gltf).
+
+1. Exporte do SketchUp, Revit, Blender, Lumion etc. em formato glTF/GLB.
+2. Salve aqui, por exemplo: plantas/P98.glb e plantas/P74.glb
+3. Em js/data.js, na planta correspondente, troque  modelo3d: null  por  modelo3d: 'plantas/P98.glb'
+
+O modelo é centralizado e redimensionado automaticamente para caber na janela da planta 3D.
+Se preferir, mande os arquivos na conversa que eu faço o ajuste.

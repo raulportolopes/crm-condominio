@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0912">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Vista Mar · Espelho 3D do condomínio</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%238b5cf6'/><path d='M9 25V11l7-4 7 4v14h-5v-6h-4v6z' fill='white'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
+</head>
+<body>
+  <aside class="sidebar" id="sidebar"></aside>
+  <main class="main">
+    <section id="mirror-view" class="view-mirror" hidden></section>
+    <section id="view" class="view"></section>
+  </main>
+  <nav class="bottom-nav" id="bottom-nav"></nav>
+  <div id="tip" class="tip" hidden></div>
+  <div id="modal-root"></div>
+  <div id="toasts" class="toasts"></div>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
