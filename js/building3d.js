@@ -1,7 +1,7 @@
 // Espelho 3D: torres residenciais modernas modeladas em código (Three.js), com materiais PBR,
 // vidro com reflexo, interiores iluminados, brises de madeira, varandas com guarda-corpo de vidro,
 // paisagismo, rua e cidade ao fundo. Iluminação dia / entardecer / noite.
-import * as THREE from 'three';
+import * as THREE from '../vendor/three.module.min.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { EffectComposer } from '../vendor/postprocessing/EffectComposer.js';
 import { RenderPass } from '../vendor/postprocessing/RenderPass.js';
@@ -156,9 +156,17 @@ function worldUV(geo, scale = 1) {
 
 export function createMirror(container, { onHover, onSelect, getUnitVisual, getMarkers } = {}) {
   if (!TEX.plaster) makeTextures();
-  const isMobile = matchMedia('(max-width: 820px)').matches;
-  const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.6 : 2));
+  // iPad se apresenta como "Macintosh" no Safari: detecta pelo toque para usar o modo leve
+  const isTouch = matchMedia('(pointer: coarse)').matches || (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+  const isMobile = isTouch || matchMedia('(max-width: 820px)').matches;
+  const renderer = new THREE.WebGLRenderer({ antialias: !isTouch, powerPreference: isTouch ? 'default' : 'high-performance' });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, isMobile ? 1.5 : 2));
+  renderer.domElement.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault();
+    const msg = document.createElement('div'); msg.className = 'mirror-fallback';
+    msg.innerHTML = '<b>O 3D foi pausado pelo navegador</b><span>Isso acontece quando o aparelho fica sem memória de vídeo.</span><button class="btn" onclick="location.reload()">Recarregar</button>';
+    container.appendChild(msg);
+  });
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;

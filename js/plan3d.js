@@ -1,5 +1,5 @@
 // Planta 3D mobiliada do apartamento (estilo "maquete" vista de cima), girando sozinha.
-import * as THREE from 'three';
+import * as THREE from '../vendor/three.module.min.js';
 import { OrbitControls } from '../vendor/OrbitControls.js';
 import { GLTFLoader } from '../vendor/loaders/GLTFLoader.js';
 
@@ -7,7 +7,7 @@ const FLOOR = { quarto: 0xc8a27a, estar: 0xd2ad84, varanda: 0x9c8f86, banho: 0xd
 
 export function createPlan3D(container, planta, { onLabels } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setPixelRatio(Math.min(devicePixelRatio, navigator.maxTouchPoints > 1 ? 1.5 : 2));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   container.appendChild(renderer.domElement);

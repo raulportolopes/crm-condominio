@@ -81,11 +81,18 @@ function ensureMirror() {
   const mv = document.getElementById('mirror-view');
   mv.innerHTML = `<div class="stage"><div class="stage-3d" id="stage3d"></div><div class="stage-top" id="stage-top"></div>
     <div class="stage-tools" id="stage-tools"></div><div class="stage-bottom" id="stage-bottom"></div></div><aside class="side" id="side"></aside>`;
-  mirror = createMirror(document.getElementById('stage3d'), {
-    getUnitVisual, getMarkers,
-    onSelect: (id) => selectUnit(id),
-    onHover: showTip,
-  });
+  try {
+    mirror = createMirror(document.getElementById('stage3d'), {
+      getUnitVisual, getMarkers,
+      onSelect: (id) => selectUnit(id),
+      onHover: showTip,
+    });
+  } catch (err) {
+    console.error(err);
+    // objeto vazio no lugar do 3D, para os botões e filtros não quebrarem
+    mirror = new Proxy({ lighting: 'noite' }, { get: (t, k) => (k in t ? t[k] : () => {}) });
+    document.getElementById('stage3d').innerHTML = `<div class="mirror-fallback"><b>Não foi possível abrir o 3D neste aparelho</b><span>O navegador não liberou o WebGL 2. Atualize o sistema do aparelho ou use o Chrome/Safari mais recente. O restante do CRM funciona normalmente.</span><button class="btn" data-go="unidades">Ver lista de unidades</button><small class="mut">${esc(String(err && err.message || err))}</small></div>`;
+  }
   renderTools();
 }
 
@@ -257,7 +264,7 @@ function sideMorador(u) {
     <div class="card">${u.status === 'vendido' ? `<b>Sem morador</b><p class="mut" style="font-size:12.5px">Vendido para ${esc(u.proprietario || '—')}. Ainda não se mudou.</p>` : `<b>Unidade à venda</b><p class="mut" style="font-size:12.5px">${p.nome} · ${area(p.area)} · ${brl(u.preco, 0)}</p><button class="btn pri sm" data-act="m-ver-venda" data-id="${u.id}">${ic('chart')}Ver no modo Vendas</button>`}</div>`;
   const enc = encPortaria(r); const ch = chamadosAbertos(r); const at = cotaAtrasada(r); const atx = at ? calcAtraso(at) : null;
   const ret = r.encomendas.filter((e) => e.status === 'retirada');
-  const ultA = r.consumo.agua.at(-1), ultG = r.consumo.gas.at(-1);
+  const ultA = r.consumo.agua[r.consumo.agua.length - 1], ultG = r.consumo.gas[r.consumo.gas.length - 1];
   return `${back}
   <div><div class="eyebrow">${CONFIG.torres.length > 1 ? 'Torre ' + u.torre + ' · ' : ''}${ord(u.andar)} andar · ${u.posicao} · desde ${r.desde}</div>
   <div style="display:flex;align-items:center;justify-content:space-between;gap:8px"><h3>Apto ${u.numero}</h3><span class="pill acc">${r.tipo}</span></div>
@@ -395,7 +402,8 @@ function openPlanta3D(id) {
       ${u.status === 'disponivel' ? `<button class="btn pri block" style="margin-top:12px" data-act="proposta" data-id="${u.id}" data-close>${ic('file')}Gerar proposta</button>` : ''}
       <div class="mut" style="font-size:11px;margin-top:12px">Arraste para girar · role para aproximar. Mobiliário ilustrativo.</div></div></div>`,
     { wide: true, onClose: () => plan && plan.dispose() });
-  plan = createPlan3D(m.el.querySelector('#plan-stage'), p);
+  try { plan = createPlan3D(m.el.querySelector('#plan-stage'), p); }
+  catch (err) { console.error(err); plan = null; m.el.querySelector('#plan-stage').innerHTML = `<div style="padding:16px">${plantaSVG(p)}</div>`; m.el.querySelector('#spin').hidden = true; return; }
   m.el.querySelector('#spin').onclick = (e) => { const on = plan.toggleSpin(); e.currentTarget.innerHTML = `${ic('rotate')}${on ? 'Parar giro' : 'Girar'}`; };
 }
 

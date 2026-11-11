@@ -8,7 +8,6 @@
   <title>Vista Mar · Espelho 3D do condomínio</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%238b5cf6'/><path d='M9 25V11l7-4 7 4v14h-5v-6h-4v6z' fill='white'/></svg>">
   <link rel="stylesheet" href="css/style.css">
-  <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
 </head>
 <body>
   <aside class="sidebar" id="sidebar"></aside>
@@ -20,6 +19,20 @@
   <div id="tip" class="tip" hidden></div>
   <div id="modal-root"></div>
   <div id="toasts" class="toasts"></div>
+  <script>
+    // Se o app não carregar (navegador antigo ou erro), mostra um aviso em vez da tela preta
+    window.__erros = [];
+    window.addEventListener('error', function (e) { window.__erros.push((e.message || 'erro') + (e.filename ? ' (' + e.filename.split('/').pop() + ':' + e.lineno + ')' : '')); });
+    window.addEventListener('unhandledrejection', function (e) { window.__erros.push(String(e.reason && e.reason.message || e.reason)); });
+    setTimeout(function () {
+      if (document.getElementById('bottom-nav').children.length || document.getElementById('sidebar').children.length) return;
+      var d = document.createElement('div');
+      d.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;background:#0b0a12;color:#eeebf7;font-family:system-ui,sans-serif;z-index:9999';
+      d.innerHTML = '<b style="font-size:18px">Não foi possível abrir o CRM neste navegador</b><span style="max-width:440px;color:#a9a3c2;line-height:1.5">Atualize o sistema do aparelho (Ajustes → Geral → Atualização de Software) e abra de novo no Safari ou Chrome.</span><small style="max-width:440px;opacity:.6;font-size:11px"></small><button onclick="location.reload()" style="padding:10px 18px;border-radius:10px;border:0;background:#7c3aed;color:#fff;font-size:15px">Tentar de novo</button>';
+      d.querySelector('small').textContent = (window.__erros.join(' | ') || 'Sem detalhes do erro.') + ' · ' + navigator.userAgent;
+      document.body.appendChild(d);
+    }, 8000);
+  </script>
   <script type="module" src="js/app.js"></script>
 </body>
 </html>
